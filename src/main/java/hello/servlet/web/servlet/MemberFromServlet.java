@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "memberFromServlet", urlPatterns = "/servlet/members/new-from")
+@WebServlet(name = "memberFromServlet", urlPatterns = "/servlet/members/new-form")
 public class MemberFromServlet extends HttpServlet {
 
     private MemberRepository memberRepository = MemberRepository.getInstance();
