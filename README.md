@@ -90,3 +90,86 @@
 2. JS 요청
 3. HTTP API - 데이터 요청
 4. JS로 HTML 렌더링
+
+
+# 서블릿
+> 자바를 사용하여 웹 페이지를 동적으로 생성하는 서버측 프로그램
+
+## 서블릿 기본
+### `@ServletComponentScan`
+- 서블릿을 직접 등록할 때 사용
+
+### `@WebServlet`
+- `name`: 서블릿 이름
+- `urlPatterns`: URL 매핑
+    - URL이 호출되면 `protected void service(HttpServletRequest request, HttpServletResponse response)` 메서드 실행
+
+### 메시지 로그 확인
+``` java
+logging.level.org.apache.coyote.http11=debug
+```
+`application.properties`에 위의 설정 추가
+
+## 서블릿 컨테이너 동작 방식
+1. 내장 톰캣 서버 생성
+2. 내장 톰캣 서버가 `@WebServlet`에 해당하는 서블릿을 서블릿 컨테이너에 생성
+
+## `HttpServletRequest`
+- 서블릿이 파싱한 HTTP 요청 메시지를 `HttpServletRequest` 메시지에 담아서 제공
+- 해당 HTTP 요청 메시지 시작부터 끝날 때까지 유지되는 임시 저장소 기능
+    - 저장: `request.setAttribute(name, value)`
+    - 조회: `request.getAttribute(name)`
+- 세션 관리 기능
+    - `request.getSession(create: true)`
+
+## HTTP 요청 데이터
+
+### 클라이언트에서 서버로 데이터를 전달하는 방법
+- GET - 쿼리 파라미터
+    - /url?data=1
+    - 메시지 바디 없이 쿼리 파라미터로 데이터를 전달
+    - 검색, 필터, 페이징 등에서 사용
+- POST - HTML Form
+    - content-type: application/x-www-form-urlencoded
+    - 메시지 바디에 쿼리 파라미터 형식으로 전달
+- HTTP message body
+    - HTTP API에서 주로 사용
+
+### GET 쿼리 파라미터
+- URL에서 `?` 뒤에 오는 것이 쿼리 파라미터
+- `이름 = 값` 형태로 추가
+- 여러개의 파라미터를 보낼 때는 `&`를 사용
+- `request.getParameter("이름")`의 형식으로 데이터를 조회 -> 같은 이름의 파라미터가 여러 개 있을 때는 불가능, 첫번째 값만 조회
+    - 같은 이름의 중복되는 파라미터를 조회할 때는 `request.getParameterValues("이름")` 사용
+- 모든 파라미터를 조회할 때는 다음과 같은 방식 사용
+``` java
+Enumeration<String> parameterNames = request.getParameterNames(); //파라미터 모두 조회
+Map<String, String[]> parameterMap = request.getParameterMap(); //파라미터를 Map으로 조회
+```
+
+### POST Form
+- content-type: application/x-www-form-urlencoded
+    - content-type은 메시지 바디가 있을 때 사용
+- 메시지 바디에 쿼리 파라미터 방식으로 데이터 전달
+- GET과 같은 방식으로 조회
+
+### JSON
+``` java
+ServletInputStream inputStream = request.getInputStream();
+String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+private ObjectMapper objectMapper = new ObjectMapper();
+HelloData helloData = objectMapper.readValue(messageBody, HelloData.class);
+```
+- SpringMVC에서 제공하는 Jackson 라이브러리 `ObjectMapper`을 사용하여 JSON 파싱
+
+## HttpServletResponse
+- HTTP 응답 메시지 생성
+    - HTTP 응답 코드 지정
+    - 헤더 생성
+    - 바디 생성
+- 편의 기능 제공
+    - Content-Type, 쿠키, Redirect
+- 사용 방법
+    - `response.setXxx()` OR `response.addXxx()` 등의 메서드 사용
+
+> `application/json`은 `utf-8` 형식을 사용하기 때문에, `charset=utf-8` 파라미터를 추가할 필요 없음
