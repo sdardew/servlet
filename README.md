@@ -173,3 +173,101 @@ HelloData helloData = objectMapper.readValue(messageBody, HelloData.class);
     - `response.setXxx()` OR `response.addXxx()` 등의 메서드 사용
 
 > `application/json`은 `utf-8` 형식을 사용하기 때문에, `charset=utf-8` 파라미터를 추가할 필요 없음
+
+<br /><br />
+
+# JSP & MVC 패턴
+> 동적인 HTML 문서를 만들 수 있는 템플릿 엔진
+
+## JSP 사용 방법
+- `build.gradle`에 라이브러리 추가
+``` gradle
+//JSP 추가 시작
+implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+implementation 'javax.servlet:jstl'
+//JSP 추가 끝
+```
+- `<%@ page contentType="text/html;charset=UTF-8" language="java" %>`
+    - JSP 파일의 첫 줄에 추가
+    - JSP 문서라는 의미
+- 동적인 변경이 필요한 부분에 자바 코드를 적용
+    - `<%`와 `%>` 안에 자바 코드를 작성
+        - `<%@ page import="import할 대상"%>`: java import에 사용
+        - `<% %>`: 자바 코드 입력
+        - `<%= %>`: 자바 코드 출력
+
+### JSP의 한계
+- 자바 코드가 JSP 파일에 너무 많이 있으면, JSP가 너무 많은 역할을 하게 됨 -> 유지 보수가 어려움
+> JSP는 화면(View)을 그리고 비즈니스 로직은 다른 곳에서 처리할 수 있도록 변경
+
+## MVC 패턴
+- 너무 많은 역할
+    - 하나의 파일에서 해야할 작업이 많으면 유지보수가 어려워짐
+- 변경 라이프 사이클
+    - 비즈니스 로직을 처리하는 것과 UI를 수정하는 일은 다르게 발생할 가능성이 높음
+    - 두 작업은 서로에게 영향을 주지 않음
+- 기능 특화
+    - 뷰 템플릿은 화면 렌더링 업무만 담당하는 것이 효과적
+
+### Model View Controller
+- 컨트롤러
+    - HTTP 요청을 받아 파라미터를 검증
+    - 비즈니스 로직 실행
+    - 뷰에 전달할 데이터를 모델에 담음
+- 모델
+    - 뷰에 전달할 데이터 저장
+    - 뷰가 렌더링 하는 일에 집중할 수 있게 됨
+- 뷰
+    - 모델의 데이터를 사용하여 화면을 렌더링
+> 컨트롤러에 비즈니스 로직을 두면 너무 많은 역할을 하게 됨. 비즈니스 로직은 Service 계층에서 처리할 수 있도록 하고 컨트롤러는 이 서비스만 호출.
+
+### 적용
+- MVC
+    - M: `HttpServletRequest` 객체
+    - V: JSP
+    - C: 서블릿
+- `dispatcher.forward()`
+    - 다른 서블릿이나 JSP로 이동할 수 있는 기능
+    - 서버 내부에서 다시 호출
+- `/WEB-INF`
+    - 외부에서 직접 JSP 호출 불가능
+    - 컨트롤러로 JSP를 호출
+
+``` java
+// Controller
+String viewPath = "/WEB-INF/views/file.jsp";
+RequestDispatcher dispatcher = request.getRequestDispatcher(viewPath);
+dispatcher.forward(request, response);
+```
+
+> redirect vs forward  
+> redirect는 다른 경로로 변경 되는 것. forward는 서버 내부의 호출이라 경로가 변경되지 않음.
+
+### View에 데이터 전달
+``` jsp
+// View
+<form action="save">
+```
+- action은 상대 경로
+- 현재 URL의 계층 + save가 호출됨
+
+``` java
+// Model에 데이터를 보관
+request.setAttribute("member", member);
+```
+- `setAttribute()`를 사용하여 request 객체에 데이터 보관
+- `${}`
+    - `request.getAttribute("member")`와 같은 역할
+
+### View에 Model List를 전달
+- `<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>`를 JSP 파일에 추가
+``` jsp
+<c:forEach var="item" items="${members}">
+    <tr>
+        <td>${item.id}</td>
+        <td>${item.username}</td>
+        <td>${item.age}</td>
+    </tr>
+</c:forEach>
+ ```
+ 
