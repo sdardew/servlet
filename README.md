@@ -269,5 +269,74 @@ request.setAttribute("member", member);
         <td>${item.age}</td>
     </tr>
 </c:forEach>
- ```
- 
+```
+
+<br /><br />
+
+# 프론트 컨트롤러
+- 공통 기능 처리
+- 프론트 컨트롤러 서블릿 하나로 요청을 받음
+- 요청에 해당하는 컨트롤러를 호출
+- 나머지 컨트롤러는 서블릿을 사용하지 않음
+- 스프링 웹 MVC의 `DispatcherServlet`이 FrontController 패턴
+
+
+# 스프링 MVC 구조
+
+## 전체 구조
+### `DispatcherServlet`
+- 스프링 MVC의 프론트 컨트롤러
+- 스프링 MVC의 핵심
+- `HttpServlet`을 상속 받아 서블릿으로 동작
+    - DispatcherServlet -> FrameworkServlet -> HttpServletBean -> HttpServlet
+- 스프링부트는 `DispatcherServlet`을 서블릿으로 자동 등록하면서 모든 경로 `urlPatterns="/"`에 대해 매핑
+    - 경로가 자세할 수록 우선 순위가 높음
+
+### 요청 흐름
+1. 서블릿 호출시 `HttpServlet`의 `service()` 호출
+2. `FrameworkServlet.service()`부터 메서드 호출 시작
+3. `DispatcherServlet.doDispatch()` 호출
+
+### SpringMVC 동작 순서
+1. 핸들러 조회
+    - 요청 URL에 매핑되는 핸들러 조회
+2. 핸들러 어댑터 조회
+    - 핸들러를 실행할 수 있는 핸들러 어댑터 조회
+3. 핸들러 어댑터 실행
+4. 핸들러 실행
+    - 핸들러 어댑터가 실제 핸들러 실행
+5. `ModelAndView` 반환
+6. `viewResolver` 호출
+7. `View` 반환
+    - 뷰의 이름을 물리 이름으로 변환
+    - 렌더링을 하는 뷰 객체 반환
+8. 뷰 렌더링
+
+### 주요 인터페이스
+- 핸들러 매핑: `org.springframework.web.servlet.HandlerMapping`
+- 핸들러 어댑터: `: org.springframework.web.servlet.HandlerAdapter`
+- 뷰 리졸버: `org.springframework.web.servlet.ViewResolver`
+- 뷰: `org.springframework.web.servlet.View`
+
+## 핸들러 매핑 & 핸들러 어댑터
+1. 핸들러 매핑으로 핸들러 조회
+2. 핸들러 어댑터 조회
+3. 핸들러 어댑터 실행
+
+## 뷰 리졸버
+``` properties
+spring.mvc.view.prefix=/WEB-INF/views/
+spring.mvc.view.suffix=.jsp
+```
+- `application.properties`의 위의 코드 입력
+- 스프링 부트는 `InternalResourceViewResolver`라는 뷰 리졸버를 자동으로 등록
+    - 등록할 때 `application.properties`의 `spring.mvc.view.prefix`, `spring.mvc.view.suffix ` 설정 정보 사용
+
+
+## 시작
+
+## 컨트롤러 통합
+
+## 실용~
+
+## 정리
