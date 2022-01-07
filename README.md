@@ -343,9 +343,3 @@ spring.mvc.view.suffix=.jsp
     - 모델과 뷰 정보를 담아서 반환
 - `addObject`
     - `ModelAndView`에 `Model` 데이터를 추가할 때 사용하는 메서드
-
-## 컨트롤러 통합
-
-## 실용~
-
-## 정리
