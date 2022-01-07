@@ -333,7 +333,16 @@ spring.mvc.view.suffix=.jsp
     - 등록할 때 `application.properties`의 `spring.mvc.view.prefix`, `spring.mvc.view.suffix ` 설정 정보 사용
 
 
-## 시작
+## MVC 시작하기
+- `@Controller`
+    - 스프링이 자동으로 등록하는 빈
+- `@RequestMapping`
+    - 요청 정보를 매핑
+    - URL이 호출될 때, 호출되는 메서드
+- `ModelAndView`
+    - 모델과 뷰 정보를 담아서 반환
+- `addObject`
+    - `ModelAndView`에 `Model` 데이터를 추가할 때 사용하는 메서드
 
 ## 컨트롤러 통합
 
